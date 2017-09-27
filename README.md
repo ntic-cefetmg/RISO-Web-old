@@ -7,10 +7,10 @@ Interface Web de gerenciamento do [RISO](https://github.com/ntic-cefetmg/RISO).
 ## Arquitetura
 
 ### Sistema operacional
-Ubuntu 16.04
+Ubuntu 16.04.3 LTS
 
 ### Dependências
-- Apache2;
+- Apache2 (Versão utilizada: 2.4.18);
 
 ## Linguagens e Tecnologias utilizadas
 - Shell Script;
@@ -24,7 +24,8 @@ Ubuntu 16.04
 ![Projeto RISO-Web](/src/imagens/projeto.jpg)
 
 ## Instalação
-- Em desenvolvimento;
+1. Baixar ou clonar esse repositório;
+2. Executar `sudo make`
 
 ## API
 Padrão: REST;
