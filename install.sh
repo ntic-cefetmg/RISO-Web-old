@@ -10,7 +10,7 @@ dependencias="apache2"
 
 instalarDependencias(){
     echo -n "Instalando dependências... ";
-    if apt-get install $dependencias >> /dev/null
+    if apt-get install -y $dependencias >> /dev/null
     then
         echo "OK";
     else
