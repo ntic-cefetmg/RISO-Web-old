@@ -74,7 +74,7 @@ configurarApache(){
     # Verifica todos os arquivos de sites habilitados do Apache
     ativarVirtualHost=1;
     for arquivo in /etc/apache2/sites-enabled/*.conf; do
-        portaAtivada=`cat $arquivo | grep VirtualHost | grep :$porta`
+        portaAtivada=`cat $arquivo 2> /dev/null | grep VirtualHost | grep :$porta`
         if [ ! -z  "$portaAtivada" ]; then
             echo -n "$(basename $arquivo) já está configurado com a porta $porta, remover ? [S/n]: ";
             read resposta        
