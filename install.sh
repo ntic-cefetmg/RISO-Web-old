@@ -6,16 +6,42 @@
 
 echo "Iniciando a instalação do RISO-Web...";
 
-dependencias="apache2"
+dependencias="apache2 php libapache2-mod-php";
 
 instalarDependencias(){
-    echo -n "Instalando dependências... ";
-    if apt-get install -y $dependencias >> /dev/null
+    echo "Instalando dependências... ";
+    for dependencia in $dependencias
+    do  
+        echo -n " - $dependencia: "       
+        if apt-get install -y $dependencia >> /dev/null
+        then
+            echo "OK";
+        else
+            echo "Erro";
+            echo "Tente instalar manualmente. Comando: sudo apt-get install $dependencia";
+            exit
+        fi
+    done
+
+    # Caso não exista o arquivo, baixa o composer.phar
+    echo -n " - composer: "; 
+    if [ -e composer.phar ] || php -r "readfile('https://getcomposer.org/installer');" | php &> /dev/null
     then
         echo "OK";
     else
         echo "Erro";
-        echo "Tente instalar manualmente. Comando: sudo apt-get install $dependencias";
+        echo "Tente instalar manualmente o composer.";
+        exit
+    fi
+
+    # Baixar dependências da API
+    echo -n "Instalando dependências da API... "; 
+    if cd src/api && php ../../composer.phar install &> /dev/null ; cd ../..
+    then
+        echo "OK";
+    else
+        echo "Erro";
+        echo "Tente instalar manualmente o composer.";
         exit
     fi
 }
@@ -58,6 +84,9 @@ configurarApache(){
     echo "  DocumentRoot /var/www/riso-web" >> conf/riso-web.conf
     echo "  ErrorLog ${APACHE_LOG_DIR}/error.log" >> conf/riso-web.conf
     echo "  CustomLog ${APACHE_LOG_DIR}/access.log combined" >> conf/riso-web.conf
+    echo "  <Directory /var/www/riso-web>" >> conf/riso-web.conf
+    echo "    AllowOverride All" >> conf/riso-web.conf
+    echo "  </Directory>" >> conf/riso-web.conf
     echo "</VirtualHost>" >> conf/riso-web.conf
 
     # Substitui o VirtualHost existente e ativa ele
@@ -100,6 +129,14 @@ configurarApache(){
     else
         echo "O Virtual Host não pode ser ativado na porta $porta porque já existe um site configurado nessa porta.";
         exit;
+    fi
+    echo -n "Ativando Mod Rewrite... "
+    if a2enmod rewrite &>> /dev/null
+    then
+        echo "OK";
+    else
+        echo "Erro";
+        exit
     fi
 }
 
