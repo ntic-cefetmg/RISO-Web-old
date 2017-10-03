@@ -1,4 +1,4 @@
-# RISO-Web
+![RISO-Web](https://github.com/ntic-cefetmg/RISO-Web/blob/develop/src/imagens/logo.jpg)
 
 ## Sobre
 
