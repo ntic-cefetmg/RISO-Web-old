@@ -2,6 +2,7 @@
 
 This code was written by:
 
+Bruno Damacena (damacena.bruno@gmail.com);
 Gabriel Dutra (nesk.frz@gmail.com); 
 NTIC Campus 2 - CEFET/MG
 
