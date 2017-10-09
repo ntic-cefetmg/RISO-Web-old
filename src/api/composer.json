@@ -1,0 +1,16 @@
+{
+    "name": "ntic-cefetmg/riso-web-api",
+    "description": "API RISO-Web",
+    "homepage": "http://github.com/ntic-cefetmg/RISO-Web",
+    "type": "api",
+    "license": "Beerware License",
+    "authors": [
+        {
+            "name": "NTIC CEFET-MG",
+            "email": "ntic@cefetmg.br"
+        }
+    ],
+    "require": {
+        "slim/slim": "^3.8"
+    }
+}
