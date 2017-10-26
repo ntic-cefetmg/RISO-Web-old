@@ -6,7 +6,7 @@
 
 echo "Iniciando a instalação do RISO-Web...";
 
-dependencias="apache2 php libapache2-mod-php";
+dependencias="apache2 php libapache2-mod-php mysql-client";
 
 instalarDependencias(){
     echo "Instalando dependências... ";
@@ -56,6 +56,9 @@ copiarArquivos(){
         echo "Erro";
         exit
     fi
+
+    # Copia a configuração do MySQL para o PHP
+    cp conf/configuracao.php /var/www/riso-web/api/configuracao.php
 }
 
 configurarApache(){
@@ -154,15 +157,64 @@ reiniciarApache(){
     fi
 }
 
+configurarMySQL(){
+
+    echo -n "Instalar MySQL Server local ? [S/n]: ";
+    read resposta        
+    [ "$resposta" != "n" -a "$resposta" != "N" ] && apt-get install -y mysql-server
+
+    echo "Configuração do MySQL"
+    echo -n "Endereço do banco de dados [Padrão: localhost]: ";
+
+    # Lê o endereço do banco de dados e caso vaizo, define como localhost
+    read endereco
+    [ -z "$endereco" ] && endereco="localhost"
+
+    echo -n "Usuário do banco de dados [Padrão: root]: ";
+
+    # Lê o usuário do banco de dados e caso vaizo, define como root
+    read usuario
+    [ -z "$usuario" ] && usuario="root";
+
+    echo -n "Digite a senha para o usuário $usuario: ";
+
+    # Lê a senha do banco de dados
+    read -s senha
+    
+    echo ""; # Quebra de linha
+    
+    echo -n "Importando banco de dados SQL... ";
+    
+    if mysql -h $endereco -u $usuario -p$senha < conf/database.sql 2>> /dev/null
+    then    
+        echo "OK";
+    else   
+        echo "Erro";
+        exit
+    fi
+
+    # Cria arquivo de configuração para o PHP
+    echo "<?php" > conf/configuracao.php
+    echo "define('MYSQL_HOST', '$endereco');" >> conf/configuracao.php
+    echo "define('MYSQL_USER', '$usuario');" >> conf/configuracao.php
+    echo "define('MYSQL_PASSWORD', '$senha');" >> conf/configuracao.php
+    echo "define('MYSQL_DB_NAME', 'riso-web');" >> conf/configuracao.php
+    echo "?>" >> conf/configuracao.php
+}
+
 instalarRisoWeb(){   
     # Instala as dependências
     instalarDependencias
 
-    # Substitui arquivos do RISO-Web no apache
-    copiarArquivos
-
     # Configura o apache
     configurarApache
+
+    # Configura o MySQL
+    configurarMySQL
+
+
+    # Substitui arquivos do RISO-Web no apache
+    copiarArquivos
 
     # Reinicia o apache
     reiniciarApache
